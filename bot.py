@@ -5,7 +5,6 @@ from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
 
 # --- CONFIGURATION ---
-# GANTI BOT_TOKEN ini dengan token baru dari BotFather untuk Play77!
 BOT_TOKEN = "7769504173:AAEN4iX_fdraTn1SPIXsYvIVx2mJLWKorhA" 
 ADMIN_ID_STR = "6949823483"
 ADMIN_ID = int(ADMIN_ID_STR)
@@ -13,7 +12,6 @@ ADMIN_ID = int(ADMIN_ID_STR)
 logging.basicConfig(level=logging.INFO)
 
 # --- DATABASE SETUP ---
-# Menggunakan nama database play77.db agar tidak campur dengan bot lain
 conn = sqlite3.connect("play77.db", check_same_thread=False)
 cursor = conn.cursor()
 cursor.execute("""
@@ -46,7 +44,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         cursor.execute("INSERT INTO users (user_id, referrer) VALUES (?, ?)", (user_id, ref))
         conn.commit()
 
-    # Menu Buttons (Bonuses Melebar di Paling Bawah)
+    # Menu Buttons (Bonuses expanded at the bottom)
     keyboard = [
         [
             InlineKeyboardButton("🆕 Register Account", url="https://play77au.com/register/SMSRegister"), 
@@ -61,15 +59,14 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
             InlineKeyboardButton("🆘 Support", url="https://play77au.com/chatroom")
         ],
         [
-            # Baris terakhir ini akan melebar otomatis memenuhi layar
+            # This last button will automatically expand to full width
             InlineKeyboardButton("🎁 Bonuses", url="https://play77au.com/promotion")
         ]
-    ]
     ]
 
     reply_markup = InlineKeyboardMarkup(keyboard)
 
-    # Tampilan Pesan Sambutan Play77
+    # Welcome Message
     welcome_msg = (
         f"🎊 *WELCOME TO PLAY77 AUSTRALIA* 🎊\n\n"
         f"G'day, *{user.first_name}*! 🇦🇺\n"
