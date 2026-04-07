@@ -100,4 +100,43 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 # --- ADMIN COMMANDS ---
 
-async def users_count(update: Update, context: ContextTypes.DEFAULT_TYPE
+async def users_count(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if update.effective_user.id != ADMIN_ID:
+        return
+    cursor.execute("SELECT COUNT(*) FROM users")
+    total = cursor.fetchone()[0]
+    await update.message.reply_text(f"👥 Total users in Play77: {total}")
+
+async def broadcast(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if update.effective_user.id != ADMIN_ID:
+        return
+    
+    if not context.args:
+        await update.message.reply_text("❌ Usage: /broadcast [message]")
+        return
+
+    msg_text = " ".join(context.args)
+    cursor.execute("SELECT user_id FROM users")
+    all_users = cursor.fetchall()
+
+    sent = 0
+    failed = 0
+    for (uid,) in all_users:
+        try:
+            await context.bot.send_message(chat_id=uid, text=msg_text)
+            sent += 1
+        except Exception:
+            failed += 1
+
+    await update.message.reply_text(f"✅ Broadcast Complete!\nSent: {sent}\nFailed: {failed}")
+
+# --- MAIN ---
+if __name__ == '__main__':
+    application = ApplicationBuilder().token(BOT_TOKEN).build()
+
+    application.add_handler(CommandHandler("start", start))
+    application.add_handler(CommandHandler("users", users_count))
+    application.add_handler(CommandHandler("broadcast", broadcast))
+
+    print("--- PLAY77 CITY JACKPOT BOT IS RUNNING ---")
+    application.run_polling()
