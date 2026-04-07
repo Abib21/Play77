@@ -46,22 +46,25 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         cursor.execute("INSERT INTO users (user_id, referrer) VALUES (?, ?)", (user_id, ref))
         conn.commit()
 
-    # Menu Buttons (Sudah dimodifikasi untuk Play77)
+    # Menu Buttons (Bonuses Melebar di Paling Bawah)
     keyboard = [
         [
             InlineKeyboardButton("🆕 Register Account", url="https://play77au.com/register/SMSRegister"), 
             InlineKeyboardButton("🔐 Login to Play", url="https://play77au.com/login")
         ],
         [
-            InlineKeyboardButton("🎁 Bonuses", url="https://play77au.com/promotion"),        ],
-        [
-            InlineKeyboardButton("📢 Play77 VIP", url="https://play77au.com/vip"),
+            InlineKeyboardButton("🎰 Play77 VIP", url="https://play77au.com/vip"),
             InlineKeyboardButton("📢 Official Channel", url="https://t.me/Play77Aus") 
         ],
         [
-            InlineKeyboardButton("📱 Facebook", url="https://www.facebook.com/profile.php?id=61566445831810/"),
+            InlineKeyboardButton("📱 Facebook", url="https://www.facebook.com/profile.php?id=61566445831810"),
             InlineKeyboardButton("🆘 Support", url="https://play77au.com/chatroom")
+        ],
+        [
+            # Baris terakhir ini akan melebar otomatis memenuhi layar
+            InlineKeyboardButton("🎁 Bonuses", url="https://play77au.com/promotion")
         ]
+    ]
     ]
 
     reply_markup = InlineKeyboardMarkup(keyboard)
