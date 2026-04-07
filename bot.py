@@ -75,7 +75,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "🔥 **URBAN JACKPOT FEATURES** 🔥\n\n"
         "🏙️  DEPOSIT  ⇢  *$10 AUD*\n"
         "⚡  PAYOUTS  ⇢  *INSTANT*\n"
-        "🪙  CRYPTO   ⇢  *BTC/LTC/USDT*\n"
+        "🪙  CRYPTO   ⇢  *BTC/ETH/SOL*\n"
         "🎁  BONUSES  ⇢  *UNLIMITED*\n\n"
         "━━━━━━━━━━━━━━━━━━━━━\n"
         "🏙️  *The Heart of Australian Gaming* 🏙️\n"
