@@ -66,17 +66,18 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     reply_markup = InlineKeyboardMarkup(keyboard)
 
-    # Welcome Message
     welcome_msg = (
-        f"🎊 *WELCOME TO PLAY77 AUSTRALIA* 🎊\n\n"
-        f"G'day, *{user.first_name}*! 🇦🇺\n"
+        "🔥 **WELCOME TO PLAY77** 🔥\n"
+        "🇦🇺 *Australia's Home of Big Wins* 🇦🇺\n"
         "━━━━━━━━━━━━━━━━━━━━━\n"
-        "🔥 *WHY CHOOSE PLAY77?* 🔥\n\n"
-        "✅ *$10 AUD* MINIMUM DEPOSIT\n"
-        "🚀 *ULTRA FAST* PAYID WITHDRAW\n"
-        "🪙 *ALL MAJOR* CRYPTO ACCEPTED\n"
-        "🤑 *CLAIM* YOUR DAILY REWARDS!\n"
-        "━━━━━━━━━━━━━━━━━━━━━"
+        f"Welcome to the Club, *{user.first_name}*! 👑\n\n"
+        "🚀 **QUICK STATS**\n"
+        "💵 *$10* Min Deposit\n"
+        "⚡ *Instant* Payouts (PayID)\n"
+        "🪙 *Crypto* Ready (BTC/LTC/USDT)\n"
+        "🎁 *Daily* Casino Bonuses\n\n"
+        "━━━━━━━━━━━━━━━━━━━━━\n"
+        "⬇️ **SELECT AN OPTION BELOW** ⬇️"
     )
 
     await update.message.reply_text(welcome_msg, reply_markup=reply_markup, parse_mode='Markdown')
