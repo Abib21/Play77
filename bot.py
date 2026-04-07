@@ -1,13 +1,15 @@
 import sqlite3
 import logging
 import os
+from datetime import datetime
+import pytz
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
 
 # --- CONFIGURATION ---
 BOT_TOKEN = "7769504173:AAEN4iX_fdraTn1SPIXsYvIVx2mJLWKorhA" 
 ADMIN_ID_STR = "6949823483"
-ADMIN_ID = int(ADMIN_ID_STR)
+ADMIN_ID = int(ADMIN_ID_STR) if ADMIN_ID_STR else 0
 
 logging.basicConfig(level=logging.INFO)
 
@@ -28,23 +30,34 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user = update.effective_user
     user_id = user.id
 
-    # Get referral ID from link (t.me/bot?start=123)
+    # 1. Get Australian Time (AEST/AEDT)
+    au_tz = pytz.timezone('Australia/Sydney')
+    au_time = datetime.now(au_tz).hour
+
+    # 2. Auto Greeting Logic
+    if 5 <= au_time < 12:
+        greeting = "Good Morning"
+    elif 12 <= au_time < 18:
+        greeting = "Good Afternoon"
+    else:
+        greeting = "Good Evening"
+
+    # 3. Referral & Database Logic
     ref = None
     if context.args:
         try:
             ref = int(context.args[0])
-            if ref == user_id:  # Prevent self-referral
+            if ref == user_id:
                 ref = None
         except ValueError:
             ref = None
 
-    # Save new user to database if not exists
     cursor.execute("SELECT user_id FROM users WHERE user_id=?", (user_id,))
     if not cursor.fetchone():
         cursor.execute("INSERT INTO users (user_id, referrer) VALUES (?, ?)", (user_id, ref))
         conn.commit()
 
-    # Menu Buttons (Bonuses expanded at the bottom)
+    # 4. Keyboard Setup
     keyboard = [
         [
             InlineKeyboardButton("🆕 Register Account", url="https://play77au.com/register/SMSRegister"), 
@@ -59,24 +72,24 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
             InlineKeyboardButton("🆘 Support", url="https://play77au.com/chatroom")
         ],
         [
-            # This last button will automatically expand to full width
+            # Expanded Bonus Button
             InlineKeyboardButton("🎁 Bonuses", url="https://play77au.com/promotion")
         ]
     ]
-
     reply_markup = InlineKeyboardMarkup(keyboard)
 
+    # 5. Creative Welcome Message (Jackpot City Theme)
     welcome_msg = (
         "🎰  ✨  🍒  🔔  ✨  🎰\n"
         "✨ **PLAY77 AUSTRALIA** ✨\n"
         "🌃  🏙️  💎  🏙️  🌃\n\n"
-        f"G'day, *{user.first_name.upper()}*! 👑🇦🇺\n"
+        f"{greeting}, *{user.first_name.upper()}*! 👑🇦🇺\n"
         "━━━━━━━━━━━━━━━━━━━━━\n"
         "🔥 **URBAN JACKPOT FEATURES** 🔥\n\n"
-        "🏙️  DEPOSIT  ⇢  *$10 AUD*\n"
-        "⚡  PAYOUTS  ⇢  *INSTANT*\n"
-        "🪙  CRYPTO   ⇢  *BTC/ETH/SOL*\n"
-        "🎁  BONUSES  ⇢  *UNLIMITED*\n\n"
+        "🏙️  **DEPOSIT** ⇢  *$10 AUD*\n"
+        "⚡  **PAYOUTS** ⇢  *INSTANT*\n"
+        "🪙  **CRYPTO** ⇢  *BTC/ETH/SOL*\n"
+        "🎁  **BONUSES** ⇢  *UNLIMITED*\n\n"
         "━━━━━━━━━━━━━━━━━━━━━\n"
         "🏙️  *The Heart of Australian Gaming* 🏙️\n"
         "━━━━━━━━━━━━━━━━━━━━━\n"
@@ -87,43 +100,4 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 # --- ADMIN COMMANDS ---
 
-async def users_count(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    if update.effective_user.id != ADMIN_ID:
-        return
-    cursor.execute("SELECT COUNT(*) FROM users")
-    total = cursor.fetchone()[0]
-    await update.message.reply_text(f"👥 Total users in Play77: {total}")
-
-async def broadcast(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    if update.effective_user.id != ADMIN_ID:
-        return
-    
-    if not context.args:
-        await update.message.reply_text("❌ Usage: /broadcast [message]")
-        return
-
-    msg_text = " ".join(context.args)
-    cursor.execute("SELECT user_id FROM users")
-    all_users = cursor.fetchall()
-
-    sent = 0
-    failed = 0
-    for (uid,) in all_users:
-        try:
-            await context.bot.send_message(chat_id=uid, text=msg_text)
-            sent += 1
-        except Exception:
-            failed += 1
-
-    await update.message.reply_text(f"✅ Broadcast Complete!\nSent: {sent}\nFailed: {failed}")
-
-# --- MAIN ---
-if __name__ == '__main__':
-    application = ApplicationBuilder().token(BOT_TOKEN).build()
-
-    application.add_handler(CommandHandler("start", start))
-    application.add_handler(CommandHandler("users", users_count))
-    application.add_handler(CommandHandler("broadcast", broadcast))
-
-    print("--- PLAY77 BOT IS RUNNING ---")
-    application.run_polling()
+async def users_count(update: Update, context: ContextTypes.DEFAULT_TYPE
